@@ -66,7 +66,11 @@ contract FirstCode {
     // Static array
     int256[3] myArray2;    
     
-    // Struct (as small class) --> custom type
+    // We can also has a hash map by using mapping
+    // Note that for non existting keys the vaule will be the default vause for the value data type
+    mapping(string => uint256) public nameToFavoriteNumber;
+
+    // Struct (as small class) --> custom or own type 
     struct Person {
         uint256 favoriteNumber;
         string name;
@@ -87,23 +91,26 @@ contract FirstCode {
        
         // Or directly 
         listOfPeople.push(Person(_favoriteNumber, _name));
+
+        // To add to hash map 
+        nameToFavoriteNumber[_name]=_favoriteNumber;
     }
 
     // Places where EVM can read and write data:
     // calldata, memory, storage
-    // calldata, memory --> means that this variable is only going to exist temporarily which means that it only exist only for the duration of the function call
+    // calldata, memory --> means that this variable is only going to exist temporarily which means that it exist only for the duration of the function call
     // The difference between them that when we use memory we can re-assign (change or manipulated) the variable name while using calldata don't allow that
     // by default string variable should be a memory variable
     //  * Calldata is a temporary variables that cannot be modified 
     //  * Memory is temporary variables that can be modified 
-    //  * Storage is permanent variables that can be modified
+    //  * Storage is permanent variables (stay in the contract forever) that can be modified
     // State variables will be saved in a storage 
-    // Note that we can only use these with primitive data type
-    // Of course we cannot use storage with parameters of the function (because this variable will be used for short time)
+    // Note that we can only use these with primitive data type (string, struct, array)
+    // Of course we cannot use storage with parameters of the function (because this variable will be used only for short time)
 
     // So the addPerson function could be 
     function addPerson2(uint256 _favoriteNumber, string calldata _name) public {
         // _name = "ggg"; // will give an error
         listOfPeople.push(Person(_favoriteNumber, _name));
-    }
+    }    
 }

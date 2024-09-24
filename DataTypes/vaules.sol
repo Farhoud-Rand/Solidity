@@ -3,22 +3,17 @@ pragma solidity ^0.8.13;
 
 import "forge-std/console.sol";
 contract Counter {
-    // uint256 public number;
-
-    // function setNumber(uint256 newNumber) public {
-    //     number = newNumber;
-    // }
-
-    // function increment() public {
-    //     number++;
-    // }
-    // =================================================
+    // Storage variables are stored in a contract's permanent data storage on the blockchain. 
+    // When you modify a storage variable in a transaction, the updated value becomes 
+    // globally accessible for subsequent reads and interactions.
+    // Storage variable (state variable) are persistent {last from transaction to transaction}
+    // We save state variable in Storage slot starting from 0x0 address 
     // Value Types
-    uint8 a =255;   // 0 -> 255
-    uint256 b = 22; // alias: uint
+    uint8 a =255;   // 0 -> 255 || address: 0x0
+    uint256 b = 22; // alias: uint || address: 0x1
 
-    int8 c = 127;   // -128 -> 127
-    int256 d = -55; // alias: int256
+    int8 c = 127;   // -128 -> 127 || address: 0x2
+    int256 d = -55; // alias: int256 || address: 0x3
 
     // Get the max value 
     uint e = type(uint).max;
@@ -29,6 +24,8 @@ contract Counter {
     bool myCondition = true;
 
     // Define a set of options for a value by a name
+    // enums can be translated to uint8 based on their position
+    // the first option is 0, then 1, 2, 3 etc...
     enum Choice {
         Up,
         Down,
@@ -37,6 +34,10 @@ contract Counter {
     }
 
     Choice choice = Choice.Up;
+
+    // Constants are stored directly in the bytecode of the contract rather than in storage or memoryin not in storage slot (because they are fixed)
+    // Note: we should give it a value in initialization 
+    int public constant x = 77;
 
     constructor() {
         // a += 1;  // This will make "a" overflow so we will get an error 

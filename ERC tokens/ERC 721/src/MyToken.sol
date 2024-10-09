@@ -4,6 +4,9 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
+
 // ! Create basic token
 contract MyToken is ERC721 {
     // * Implement the parent constructor 
@@ -61,5 +64,39 @@ contract MyToken3 is ERC721, ERC721Burnable {
         // Use the internal _mint function to mint the token
         uint256 tokenId = _nextTokenId++;
         _mint(to, tokenId);
+    }
+}
+
+// ! Create burnable and pusable token
+contract MyToken4 is ERC721Burnable, Pausable, Ownable {
+    uint256 private _nextTokenId;
+
+    constructor(address initialOwner)
+        ERC721("MyToken", "MTK")
+        Ownable(initialOwner)
+    {}
+
+    // Mint function with pausable modifier
+    //! We should add whenNotPaused modifer
+    function safeMint(address to) public onlyOwner whenNotPaused {
+        uint256 tokenId = _nextTokenId++;
+        _safeMint(to, tokenId);
+    }
+
+    // Pause the contract (owner only)
+    function pause() public onlyOwner {
+        _pause();
+    }
+
+    // Unpause the contract (owner only)
+    function unpause() public onlyOwner {
+        _unpause();
+    }
+
+    // Override burn to ensure it can't be called when paused
+    //! We should add whenNotPaused modifer
+    //? Note all functions can be only called from the owner, but burn function can be called from any where (just in this case but we can make it onlyOwner)
+    function burn(uint256 tokenId) public override whenNotPaused {
+        super.burn(tokenId);
     }
 }

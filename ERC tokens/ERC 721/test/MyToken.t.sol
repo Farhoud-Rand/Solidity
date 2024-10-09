@@ -147,3 +147,52 @@ contract MyToken3Test is Test {
        token.ownerOf(tokenId); // This should revert since the token is burned
     }
 }
+
+//! Test burnable and pusable token
+contract MyToken4Test is Test {
+    MyToken4 private token;
+    address private owner;
+    address private user;
+
+    function setUp() public {
+        owner = vm.addr(1);
+        user = vm.addr(2);
+        token = new MyToken4(owner);
+    }
+
+    function testPauseAndBurn() public {
+        // Mint a token to the user
+        vm.prank(owner);
+        token.safeMint(user);
+        uint256 tokenId = 0;
+
+        // User should own the token
+        assertEq(token.ownerOf(tokenId), user);
+
+        // Owner pauses the contract
+        vm.prank(owner);
+        token.pause();
+
+        //! I think if the test revent a function because it has whenNotPaused modifer then it will not continue testing the rest of test cases 
+        // Try burning while paused (should revert)
+        // vm.prank(user);
+        // vm.expectRevert("Pausable: paused");
+        // token.burn(tokenId);
+
+        vm.prank(owner);
+        vm.expectRevert("Pausable: paused");
+        token.safeMint(user);
+
+        // Owner unpauses the contract
+        vm.prank(owner);
+        token.unpause();
+
+        // Try burning again (should succeed now)
+        vm.prank(user);
+        token.burn(tokenId);
+
+        // Ensure the token no longer exists
+        vm.expectRevert("ERC721: invalid token ID");
+        token.ownerOf(tokenId);
+    }
+}

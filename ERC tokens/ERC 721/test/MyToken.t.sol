@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 import "forge-std/Test.sol";
 import "../src/MyToken.sol";
-
+ 
 // ! Test basic token
 contract MyTokenTest is Test {
     MyToken private token;

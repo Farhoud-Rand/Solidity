@@ -63,8 +63,8 @@ contract MyToken2Test is Test {
     address private user;  // Address for another user
 
     function setUp() public {
-        owner = address(this); // Set the test contract as the owner
-        user = address(0x123); // Simulate another user address
+        owner = vm.addr(1);     // Use a different address, or you could also just set it to a specific address
+        user = address(0x123);  // Simulate another user address
 
         // Deploy the MyToken2 contract with the test contract as the initial owner
         token = new MyToken2(owner);
@@ -79,17 +79,28 @@ contract MyToken2Test is Test {
     }
 
     // * Test minting function by the owner
-    function testMintByOwner() public {
+    function testMintByOwner() public {        
         // Mint a token to the owner
-        token.mint(owner);
+        //! Note we should change the test address to be the owner address
+        //* vm.prank(address) is used to simulate the action of a specific address calling a function. 
+        //* This allows you to change the context of a function call to appear as if it were made by 
+        //* a different account (or address) than the one currently executing the test.
+        vm.prank(owner); //! add this 
+        token.safeMint(owner);
         uint256 tokenId = 0; // Since this is the first token, ID should be 0
 
         // Check the owner of token ID 0
         assertEq(token.ownerOf(tokenId), owner);
+        
+        //! Note
+        //! To allow a second minting operation by user, you will need to adjust your logic.
+        //! Since only the owner can mint new tokens, you could perform the second minting operation
+        //! by calling it through the owner (the test contract).
 
-        // Mint a second token to the user
-        token.mint(user);
-        uint256 secondTokenId = 1; // The second token should have ID 1
+        // Mint a second token to the user, but do it as the owner
+        vm.prank(owner);            // Set the context back to the owner
+        token.safeMint(user);       // Now mint to the user
+        uint256 secondTokenId = 1;  // The second token should have ID 1
 
         // Check the owner of token ID 1
         assertEq(token.ownerOf(secondTokenId), user);
@@ -98,8 +109,8 @@ contract MyToken2Test is Test {
     // * Test minting is restricted to the contract owner
     function testMintByNonOwner() public {
         // Expect a revert when a non-owner tries to mint
-        vm.prank(user); // Simulate calling from the user address
+        vm.prank(user);                                       // Simulate calling from the user address
         vm.expectRevert("Ownable: caller is not the owner"); // Expect revert
-        token.mint(user);
+        token.safeMint(user);
     }
 }

@@ -114,3 +114,36 @@ contract MyToken2Test is Test {
         token.safeMint(user);
     }
 }
+
+// ! Test burnable token
+contract MyToken3Test is Test {
+    MyToken3 private token;
+
+    address private owner; // Address for the contract owner
+
+    function setUp() public {
+        owner = address(this); // Set the test contract as the owner
+
+        // Deploy the MyToken3 contract
+        token = new MyToken3();
+    }
+
+    // * Test burning function
+    function testBurn() public {
+        uint256 tokenId = 0; // ID of the token to burn
+
+        // Mint a token directly using the _mint function
+        token.mint(owner);
+
+        // Ensure the token exists before burning
+        assertEq(token.ownerOf(tokenId), owner);
+
+        // Burn the token
+        token.burn(tokenId);
+
+        // Check that the token no longer exists
+        // Expect the call to revert since the token has been burned
+       vm.expectRevert("ERC721: owner query for nonexistent token");
+       token.ownerOf(tokenId); // This should revert since the token is burned
+    }
+}

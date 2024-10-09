@@ -43,3 +43,23 @@ contract MyToken2 is ERC721, Ownable  {
         _safeMint(to, tokenId);
     }
 }
+
+// ! Create burnable token
+contract MyToken3 is ERC721, ERC721Burnable {
+    //* The ERC721Burnable contract from OpenZeppelin does not have its own constructor;
+    //* instead, it inherits the constructor from the ERC721 contract.
+    //* When you create a contract that extends ERC721Burnable, you only need to 
+    //* provide the constructor parameters required by the ERC721 contract.
+    //* so we don't implement its constructor
+    constructor() ERC721("MyToken", "MTK") {}
+
+    // * Track the next token ID to mint
+    uint256 private _nextTokenId;
+    
+    // * Public mint function
+    function mint(address to) public {
+        // Use the internal _mint function to mint the token
+        uint256 tokenId = _nextTokenId++;
+        _mint(to, tokenId);
+    }
+}
